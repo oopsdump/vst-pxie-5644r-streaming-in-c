@@ -19,22 +19,22 @@ document.
 
 ## What it does
 
-| Capability | Notes |
-|---|---|
-| Streaming record | 120 MS/s sustained, 457 MB/s to disk, zero dropped samples over a 60 s run |
+| Capability         | Notes                                                                                                                             |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Streaming record   | 120 MS/s sustained, 457 MB/s to disk, zero dropped samples over a 60 s run                                                        |
 | Streaming playback | Paced by the configured IQ rate; FIFO pre-filled to 80% before the engine starts, so a run begins without gaps (`underflows = 0`) |
-| Control UI | Plain Win32 GUI (no runtime dependencies) for both directions plus live buffer telemetry |
-| File format | VSTIQ v1 container, plus TDMS support for interchange with the NI tools |
+| Control UI         | Plain Win32 GUI (no runtime dependencies) for both directions plus live buffer telemetry                                          |
+| File format        | VSTIQ v1 container, plus TDMS support for interchange with the NI tools                                                           |
 
 ## Requirements
 
-| Item | Detail |
-|---|---|
-| OS | Windows 10/11 x64 |
-| Compiler | Visual Studio 2015 SP2 … 2022 (any edition, or Build Tools) |
-| Drivers | NI-RFSA and NI-RFSG, plus the *NI Streaming for VST* FPGA image |
-| FPGA image | `C:\Users\Public\Documents\National Instruments\FPGA Extensions Bitfiles\NI PXIe-5644R\NI Streaming for VST.lvbitx` (selectable in the UI) |
-| Runtime location | **The executables must live on the `C:` volume.** NI-PAL fails to initialise otherwise (`0xBFFA0000`). |
+| Item             | Detail                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| OS               | Windows 10/11 x64                                                                                                                          |
+| Compiler         | Visual Studio 2015 SP2 … 2022 (any edition, or Build Tools)                                                                                |
+| Drivers          | NI-RFSA and NI-RFSG, plus the *NI Streaming for VST* FPGA image                                                                            |
+| FPGA image       | `C:\Users\Public\Documents\National Instruments\FPGA Extensions Bitfiles\NI PXIe-5644R\NI Streaming for VST.lvbitx` (selectable in the UI) |
+| Runtime location | **The executables must live on the `C:` volume.** NI-PAL fails to initialise otherwise (`0xBFFA0000`).                                     |
 
 ## Build
 
@@ -103,17 +103,17 @@ vst_stream_playback.exe --in D:\capture.vstiq --power -5 --read-block-mb 4
 
 Useful options:
 
-| Option | Applies to | Meaning |
-|---|---|---|
-| `--resource RIO0` | both | RIO resource name |
-| `--bitfile <path>` | both | streaming FPGA image (full path; the driver gets only the file name) |
-| `--ref-clock <name>` | both | `OnboardClock`, `RefIn`, `PXI_Clk`, `ClkIn` |
-| `--host-depth-blocks N` | both | FIFO depth in blocks (16 blocks ≈ 8,000,000 elements for playback) |
-| `--read-block-mb N` | both | transfer size per FIFO access (playback default 4 MB) |
-| `--record-ring-mb N` | record | write-back ring buffer, default 512 MB |
-| `--playback-ring-mb N` | playback | read-ahead queue, default 32 MB |
-| `--max-file-mb N` | record | stop once the file reaches this size |
-| `--seconds S` | both | recording duration / playback limit |
+| Option                  | Applies to | Meaning                                                              |
+| ----------------------- | ---------- | -------------------------------------------------------------------- |
+| `--resource RIO0`       | both       | RIO resource name                                                    |
+| `--bitfile <path>`      | both       | streaming FPGA image (full path; the driver gets only the file name) |
+| `--ref-clock <name>`    | both       | `OnboardClock`, `RefIn`, `PXI_Clk`, `ClkIn`                          |
+| `--host-depth-blocks N` | both       | FIFO depth in blocks (16 blocks ≈ 8,000,000 elements for playback)   |
+| `--read-block-mb N`     | both       | transfer size per FIFO access (playback default 4 MB)                |
+| `--record-ring-mb N`    | record     | write-back ring buffer, default 512 MB                               |
+| `--playback-ring-mb N`  | playback   | read-ahead queue, default 32 MB                                      |
+| `--max-file-mb N`       | record     | stop once the file reaches this size                                 |
+| `--seconds S`           | both       | recording duration / playback limit                                  |
 
 ## Throughput expectations
 
@@ -122,41 +122,15 @@ window equals the configured duration and the data lands in the ring buffer.
 Playback is paced by the IQ rate stored in the file, and therefore needs a volume that can
 sustain it:
 
-| IQ rate | Disk bandwidth needed |
-|---|---|
-| 20 MS/s | 80 MB/s |
-| 60 MS/s | 240 MB/s |
-| 120 MS/s | 480 MB/s |
+| IQ rate  | Disk bandwidth needed |
+| -------- | --------------------- |
+| 20 MS/s  | 80 MB/s               |
+| 60 MS/s  | 240 MB/s              |
+| 120 MS/s | 480 MB/s              |
 
 A volume that only sustains ~150 MB/s will still complete a short capture (the OS write
 cache absorbs the burst) but will spend a long time flushing afterwards; the recorder
 reports this as a `tail` phase and prints `[flush]` lines while it drains.
-
-## Repository layout
-
-```
-src\common\               VSTIQ container, TDMS reader/writer, ring buffer, error text
-src\vst_stream_record.c   streaming recorder
-src\vst_stream_playback.c streaming player
-src\vst_gui.c             Win32 control UI
-tools\                    build, run, test and recon scripts
-docs\                     design notes, protocol reference, analysis
-build\                    generated artefacts (not tracked)
-LICENSE                   Apache License 2.0
-AGENT.md                  working rules and conventions for this repository
-```
-
-## Documentation
-
-| Document | Content |
-|---|---|
-| `docs\design\final-implementation-notes.md` | the facts this implementation depends on: bitfile, FIFO numbers, register map, call order |
-| `docs\design\stream-playback-one-to-one.md` | playback audit against the LabVIEW example |
-| `docs\design\gui.md` | UI layout, child-process contract, command lines |
-| `docs\design\architecture.md` | components, data flow, threading |
-| `docs\protocol\rf-iq-file-format.md` | VSTIQ v1 container layout |
-| `docs\analysis\ni-pal-executable-volume.md` | why the executables must run from `C:` |
-| `AGENT.md` | repository rules (language, layout, verification, commit policy) |
 
 ## Status
 
