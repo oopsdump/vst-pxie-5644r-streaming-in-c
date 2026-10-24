@@ -1,0 +1,11 @@
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+.vscode/
+Thumbs.db
+
+*.obj
