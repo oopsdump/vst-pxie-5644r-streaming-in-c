@@ -28,13 +28,13 @@ document.
 
 ## Requirements
 
-| Item             | Detail                                                                                                                                     |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| OS               | Windows 10/11 x64                                                                                                                          |
-| Compiler         | Visual Studio 2015 SP2 … 2022 (any edition, or Build Tools)                                                                                |
-| Drivers          | NI-RFSA and NI-RFSG, plus the *NI Streaming for VST* FPGA image                                                                            |
-| FPGA image       | `C:\Users\Public\Documents\National Instruments\FPGA Extensions Bitfiles\NI PXIe-5644R\NI Streaming for VST.lvbitx` (selectable in the UI) |
-| Runtime location | **The executables must live on the `C:` volume.** NI-PAL fails to initialise otherwise (`0xBFFA0000`).                                     |
+| Item             | Detail                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------ |
+| OS               | Windows 10/11 x64                                                                                      |
+| Compiler         | Visual Studio 2015 SP2 … 2022 (any edition, or Build Tools)                                            |
+| Drivers          | NI-RFSA and NI-RFSG                                                                                    |
+| FPGA image       | `NI Streaming for VST.lvbitx` in NI *Disk Streaming / Streaming Host Example for the<br/>PXIe-5644R*   |
+| Runtime location | **The executables must live on the `C:` volume.** NI-PAL fails to initialise otherwise (`0xBFFA0000`). |
 
 ## Build
 
